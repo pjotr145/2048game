@@ -29,6 +29,7 @@ class Board():
             return str(nmr).center(5, " ")
 
         def colour(nmr):
+            ''' Add some colour to printing the board '''
             colnmrs = {0:0,
                        2:21,
                        4:27,

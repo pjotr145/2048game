@@ -141,3 +141,5 @@ dmypy.json
 # Personal stuff
 *.bck
 test.py
+# vim swap files
+*.swp
