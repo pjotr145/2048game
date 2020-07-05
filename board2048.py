@@ -37,7 +37,7 @@ class Board():
                        16:172,
                        32:163,
                        64:160,
-                       128:118,
+                       128:120,
                        256:28,
                        512:35,
                        1024:22,
@@ -195,3 +195,11 @@ class Board():
             return False
 
         return (check_zeros() or check_rows() or check_columns())
+
+    def normalise_board(self):
+        ''' norm every field of the board compared to the max value
+            E.g [1, 3, 4, 2] => [0.25, 0.75, 1, 0.5]
+        '''
+        max_n = max(self.board)
+        norm_board = [i / max_n for i in self.board]
+        return norm_board

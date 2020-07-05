@@ -23,4 +23,4 @@ if __name__ == "__main__":
         else:
             pass
         print(spel)
-#        can_play = spel.check_if_moves_possible()
+        print(spel.normalise_board())
