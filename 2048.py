@@ -20,7 +20,8 @@ if __name__ == "__main__":
         elif getch == "e":
             spel.move_right()
             spel.add_random()
+        elif getch == "q":
+            break
         else:
             pass
         print(spel)
-        print(spel.normalise_board())

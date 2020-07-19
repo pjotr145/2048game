@@ -144,14 +144,14 @@ class Board():
 
     def add_random(self):
         ''' get random empty field en place 2 or 4.
-            60% chance on 2 and 40% chance on 4
+            90% chance on 2 and 40% chance on 4
         '''
 #        self.flatten_board()
         all_zeros = [i for i, e in enumerate(self.board) if e == 0]
         if len(all_zeros) > 0:
             select = random.choice(all_zeros)
             criteria = random.random()
-            if criteria < 0.6:
+            if criteria < 0.9:
                 self.board[select] = 2
             else:
                 self.board[select] = 4
