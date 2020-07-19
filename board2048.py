@@ -203,3 +203,9 @@ class Board():
         max_n = max(self.board)
         norm_board = [i / max_n for i in self.board]
         return norm_board
+
+    def did_board_change(self, old_board):
+        ''' Check if the board changed after a move
+        '''
+        #TODO
+        pass
