@@ -26,18 +26,31 @@ def play_one_game(spel, nn):
 #        outputs = nn.query(inputs)
 #        direction = np.argmax(outputs)
         direction = random_direction()
+        old_board = spel.board
         if direction == 0:
             spel.move_up()
-            spel.add_random()
+            if spel.did_board_change(old_board):
+                spel.add_random()
+            else:
+                count_moves -= 1
         elif direction == 1:
             spel.move_down()
-            spel.add_random()
+            if spel.did_board_change(old_board):
+                spel.add_random()
+            else:
+                count_moves -= 1
         elif direction == 2:
             spel.move_left()
-            spel.add_random()
+            if spel.did_board_change(old_board):
+                spel.add_random()
+            else:
+                count_moves -= 1
         elif direction == 3:
             spel.move_right()
-            spel.add_random()
+            if spel.did_board_change(old_board):
+                spel.add_random()
+            else:
+                count_moves -= 1
         else:
             pass
         count_moves += 1
