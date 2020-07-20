@@ -99,8 +99,8 @@ class Board():
         for column in range(self.len_row):
             one_column = []
             for row in range(self.len_row):
-                print("board: {}".format(self.board))
-                print("row: {} and column: {}".format(row, column))
+#                print("board: {}".format(self.board))
+#                print("row: {} and column: {}".format(row, column))
                 one_column += [self.board[row][column]]
             new_column = self.move_row(one_column)
             for row in range(self.len_row):
@@ -123,13 +123,13 @@ class Board():
     def move_left(self):
         ''' If possible make all fields on the board move left. '''
         self.expand_board()
-#        print(self.board)
+#        print("after expand: {}".format(self.board))
         new_board = []
         for row in self.board:
             new_row = self.move_row(row)
             new_board += new_row
         self.board = new_board
-#        print(self.board)
+#        print("Before flatten: {}".format(self.board))
 #        self.flatten_board()
 
     def move_right(self):
@@ -164,25 +164,28 @@ class Board():
                 return True
             else:
                 # if False then next check needs expanded board
-                self.expand_board()
+#                self.expand_board()
                 return False
 
         def check_rows():
             ''' Check if there are the same numbers next to each
                 other on a row.
             '''
+            self.expand_board()
             for row in self.board:
                 for i, j in enumerate(row[:-1]):
                     if j == row[i + 1]:
                         # if True then game needs flattened board
                         self.flatten_board()
                         return True
+            self.flatten_board()
             return False
 
         def check_columns():
             ''' Check if there are the same numbers next to each
                 other on a column.
             '''
+            self.expand_board()
             for j in range(self.len_row):
                 column = []
                 for row in self.board:
@@ -192,6 +195,7 @@ class Board():
                         # if True then game needs flattened board
                         self.flatten_board()
                         return True
+            self.flatten_board()
             return False
 
         return (check_zeros() or check_rows() or check_columns())
