@@ -9,17 +9,25 @@ if __name__ == "__main__":
     while spel.check_if_moves_possible():
         getch = input()[0]
         if getch == ",":
+            old_board = spel.board
             spel.move_up()
-            spel.add_random()
+            if spel.did_board_change(old_board):
+                spel.add_random()
         elif getch == "o":
+            old_board = spel.board
             spel.move_down()
-            spel.add_random()
+            if spel.did_board_change(old_board):
+                spel.add_random()
         elif getch == "a":
+            old_board = spel.board
             spel.move_left()
-            spel.add_random()
+            if spel.did_board_change(old_board):
+                spel.add_random()
         elif getch == "e":
+            old_board = spel.board
             spel.move_right()
-            spel.add_random()
+            if spel.did_board_change(old_board):
+                spel.add_random()
         elif getch == "q":
             break
         else:

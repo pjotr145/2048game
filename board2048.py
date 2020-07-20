@@ -207,5 +207,7 @@ class Board():
     def did_board_change(self, old_board):
         ''' Check if the board changed after a move
         '''
-        #TODO
-        pass
+        if old_board == self.board:
+            return False
+        else:
+            return True
