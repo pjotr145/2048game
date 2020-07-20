@@ -14,14 +14,14 @@ output_nodes = 4
 learning_rate = 0.1
 
 # Max number of moves per game
-max_moves = 300
+max_moves = 3000
 # Max number of games
 max_games = 1000
 
 def play_one_game(spel, nn):
-    teller = 0
+    count_moves = 0
 #    while spel.check_if_moves_possible() and teller < max_moves:
-    while spel.check_if_moves_possible():
+    while spel.check_if_moves_possible() and count_moves < max_moves:
 #        inputs = np.asfarray(spel.normalise_board())
 #        outputs = nn.query(inputs)
 #        direction = np.argmax(outputs)
@@ -40,7 +40,7 @@ def play_one_game(spel, nn):
             spel.add_random()
         else:
             pass
-        teller += 1
+        count_moves += 1
     return max(spel.board)
 
 def random_direction():
@@ -57,40 +57,21 @@ def random_direction():
 
 # Create instance of neural network
 nn = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
-# Create instance of 2048 game
-#spel = Board()
-#print(spel)
-counter = 0
-max_val = 0
+
 if __name__ == "__main__":
-    while max_val < 512:
-        spel = Board()
-#        print("New game: {}".format(spel.board))
-        teller = 0
-#        while spel.check_if_moves_possible() and teller < max_moves:
-        while spel.check_if_moves_possible():
-#            inputs = np.asfarray(spel.normalise_board())
-#            outputs = nn.query(inputs)
-#            direction = np.argmax(outputs)
-            direction = random_direction()
-            if direction == 0:
-                spel.move_up()
-                spel.add_random()
-            elif direction == 1:
-                spel.move_down()
-                spel.add_random()
-            elif direction == 2:
-                spel.move_left()
-                spel.add_random()
-            elif direction == 3:
-                spel.move_right()
-                spel.add_random()
-            else:
-                pass
-            teller += 1
-        if max(spel.board) > max_val:
-            max_val = max(spel.board)
-        counter +=1
-    print(spel)
-#    print(spel.board)
-    print("Aantal spellen: {}".format(counter))
+    counting_total_games = []
+    while len(counting_total_games) < 30:
+        nmr_games = 0
+        max_val = 0
+        while max_val < 512:
+            # Create instance of 2048 game
+            spel = Board()
+            high_game_value = play_one_game(spel, nn)
+            if high_game_value > max_val:
+                max_val = high_game_value
+            nmr_games +=1
+        print(spel)
+        print("Aantal spellen: {}".format(nmr_games))
+        counting_total_games += [nmr_games]
+        print("Aant keer 512: {}".format(len(counting_total_games)))
+    print("Total nmr games: {}".format(counting_total_games))
