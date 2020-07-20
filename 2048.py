@@ -44,6 +44,7 @@ def play_one_game(spel, nn):
     return max(spel.board)
 
 def random_direction():
+    ''' Simulates a player by chosing randomly in wich direction to move '''
     rand_direction = random()
     if rand_direction < 0.25:
         return 0
@@ -60,10 +61,10 @@ nn = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
 
 if __name__ == "__main__":
     counting_total_games = []
-    while len(counting_total_games) < 30:
+    while len(counting_total_games) < 5:
         nmr_games = 0
         max_val = 0
-        while max_val < 512:
+        while max_val < 256:
             # Create instance of 2048 game
             spel = Board()
             high_game_value = play_one_game(spel, nn)
