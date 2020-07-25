@@ -145,3 +145,6 @@ test.py
 *.swp
 # my tmp files
 *.tmp
+# Eclipse and pydev stuff
+.project
+.pydevproject
