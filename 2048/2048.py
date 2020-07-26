@@ -65,7 +65,8 @@ def play_one_game(spel, nn):
         else:
             pass
         count_moves += 1
-        one_game[count_moves] = one_move
+        if spel.did_board_change(old_board):
+            one_game[count_moves] = one_move
     return max(spel.board), one_game
 
 
@@ -101,6 +102,6 @@ if __name__ == "__main__":
         print("Aantal spellen: {}".format(nmr_games))
         counting_total_games += [nmr_games]
         print("Aant keer 512: {}".format(len(counting_total_games)))
-#        for i in game_steps:
-#            print("{}: {}".format(i, game_steps[i]))
+        for i in game_steps:
+            print("{}: {}".format(i, game_steps[i]))
     print("Total nmr games: {}".format(counting_total_games))

@@ -3,6 +3,7 @@
 from more_itertools import locate
 import random
 
+
 class Board():
     ''' Class definition of a 2048 board[0, 0, 0]
     '''
@@ -30,20 +31,20 @@ class Board():
 
         def colour(nmr):
             ''' Add some colour to printing the board '''
-            colnmrs = {0:0,
-                       2:21,
-                       4:27,
-                       8:46,
-                       16:172,
-                       32:163,
-                       64:160,
-                       128:120,
-                       256:28,
-                       512:35,
-                       1024:22,
-                       2048:94,
-                       4096:88,
-                       8192:93}
+            colnmrs = {   0:   0,
+                          2:  21,
+                          4:  27,
+                          8:  46,
+                         16: 172,
+                         32: 163,
+                         64: 160,
+                        128: 120,
+                        256:  28,
+                        512:  35,
+                       1024:  22,
+                       2048:  94,
+                       4096:  88,
+                       8192:  93}
             if nmr == 0:
                 return esc('48;5;0') + esc('38;5;0')
             else:
@@ -52,7 +53,6 @@ class Board():
         print_board = f'\033[2J' + f'\033[H'
         for i in range(self.len_row):
             for j in range(self.len_row):
-#                print_board += esc('31;43') + cntr(self.board[i * self.len_row + j]) + esc(0)
                 print_board += colour(self.board[i * self.len_row + j]) + \
                                cntr(self.board[i * self.len_row + j]) + esc(0)
             print_board += "\n"
@@ -69,9 +69,8 @@ class Board():
         ''' Converts 1D list to 2D list of lists.
             E.g. [1,2,3,4] => [[1,2],[3,4]]
         '''
-        self.board = [self.board[i:i + self.len_row] for i in range(0,
-                                                                    len(self.board),
-                                                                    self.len_row)]
+        self.board = [self.board[i:i + self.len_row]
+                      for i in range(0, len(self.board), self.len_row)]
 
     def move_row(self, row):
         ''' Moves one row according to the rules of the game 2048
@@ -143,7 +142,7 @@ class Board():
 #        self.flatten_board()
 
     def add_random(self):
-        ''' get random empty field en place 2 or 4.
+        ''' get random empty field  place 2 or 4.
             90% chance on 2 and 40% chance on 4
         '''
 #        self.flatten_board()
