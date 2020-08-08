@@ -4,6 +4,8 @@ from board2048 import Board
 from nn import neuralNetwork
 import numpy as np
 from random import random
+import json
+
 
 # Number of input, hidden and outputnodes
 input_nodes = 16
@@ -22,7 +24,6 @@ max_games = 1000
 def play_one_game(spel, nn):
     count_moves = 0
     one_game = {}
-#    while spel.check_if_moves_possible() and teller < max_moves:
     while spel.check_if_moves_possible() and count_moves < max_moves:
 #        inputs = np.asfarray(spel.normalise_board())
 #        outputs = nn.query(inputs)
@@ -64,9 +65,9 @@ def play_one_game(spel, nn):
                 count_moves -= 1
         else:
             pass
-        count_moves += 1
         if spel.did_board_change(old_board):
-            one_game[count_moves] = one_move
+            one_game["move_" + str(count_moves)] = one_move
+        count_moves += 1
     return max(spel.board), one_game
 
 
@@ -83,15 +84,13 @@ def random_direction():
         return 3
 
 
-# Create instance of neural network
-nn = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
-
-if __name__ == "__main__":
+def find_boards(nn, number_of_boards, min_max_value):
     counting_total_games = []
-    while len(counting_total_games) < 3:
+    games = {}
+    while len(counting_total_games) < number_of_boards:
         nmr_games = 0
         max_val = 0
-        while max_val < 512:
+        while max_val < min_max_value:
             # Create instance of 2048 game
             spel = Board()
             high_game_value, game_steps = play_one_game(spel, nn)
@@ -99,9 +98,20 @@ if __name__ == "__main__":
                 max_val = high_game_value
             nmr_games += 1
         print(spel)
-        print("Aantal spellen: {}".format(nmr_games))
+        games["game_" + str(len(counting_total_games))] = game_steps
         counting_total_games += [nmr_games]
-        print("Aant keer 512: {}".format(len(counting_total_games)))
-        for i in game_steps:
-            print("{}: {}".format(i, game_steps[i]))
+        # for i in game_steps:
+        #     print("{}: {}".format(i, game_steps[i]))
+    return games, counting_total_games
+
+
+if __name__ == "__main__":
+    # Create instance of neural network
+    nn = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
+    games, counting_total_games = find_boards(nn, 10000, 256)
+    games["counting_games"] = counting_total_games
     print("Total nmr games: {}".format(counting_total_games))
+    # Writing to sample.json
+    json_object = json.dumps(games, indent=4, sort_keys=False)
+    with open("sample.json", "w") as outfile:
+        outfile.write(json_object)

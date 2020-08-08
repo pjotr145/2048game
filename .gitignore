@@ -148,3 +148,5 @@ test.py
 # Eclipse and pydev stuff
 .project
 .pydevproject
+# json data files
+*.json
