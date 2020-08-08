@@ -22,9 +22,13 @@ max_games = 1000
 
 
 def play_one_game(spel, nn):
+    ''' Plays one game. Still needs manual editing to switch between
+        random-player and neural network.
+    '''
     count_moves = 0
     one_game = {}
     while spel.check_if_moves_possible() and count_moves < max_moves:
+        # TODO: make random/neural player a choice in the game.
 #        inputs = np.asfarray(spel.normalise_board())
 #        outputs = nn.query(inputs)
 #        direction = np.argmax(outputs)
@@ -85,6 +89,10 @@ def random_direction():
 
 
 def find_boards(nn, number_of_boards, min_max_value):
+    ''' Plays game until number_of_boards amount of plays with at least
+        min_max_value have been found. Returns list with the boards and
+        directnion and a list with the number of games needed to play.
+    '''
     counting_total_games = []
     games = {}
     while len(counting_total_games) < number_of_boards:
@@ -102,6 +110,8 @@ def find_boards(nn, number_of_boards, min_max_value):
         counting_total_games += [nmr_games]
         # for i in game_steps:
         #     print("{}: {}".format(i, game_steps[i]))
+    # TODO: clear games of movements after reaching highest values. Now the
+    # game continues after that until board is no longer playable.
     return games, counting_total_games
 
 
