@@ -150,3 +150,8 @@ test.py
 .pydevproject
 # json data files
 *.json
+*.pickle
+# todo file
+TODO
+# config file
+2048.cfg

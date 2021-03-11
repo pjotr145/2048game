@@ -24,6 +24,7 @@ max_games = 1000
 def play_one_game(spel, nn):
     ''' Plays one game. Still needs manual editing to switch between
         random-player and neural network.
+        Returns max value on final board and all boards of current game.
     '''
     count_moves = 0
     one_game = {}
@@ -34,12 +35,15 @@ def play_one_game(spel, nn):
 #        direction = np.argmax(outputs)
         direction = random_direction()
         old_board = spel.board
+        spel.move_score = 0
         one_move = {}
+        # TODO: refactor if-loop below. seems too complicated.
         if direction == 0:
             spel.move_up()
             if spel.did_board_change(old_board):
                 one_move["board"] = old_board
                 one_move["direction"] = direction
+                one_move["score"] = spel.move_score
                 spel.add_random()
             else:
                 count_moves -= 1
@@ -48,6 +52,7 @@ def play_one_game(spel, nn):
             if spel.did_board_change(old_board):
                 one_move["board"] = old_board
                 one_move["direction"] = direction
+                one_move["score"] = spel.move_score
                 spel.add_random()
             else:
                 count_moves -= 1
@@ -56,6 +61,7 @@ def play_one_game(spel, nn):
             if spel.did_board_change(old_board):
                 one_move["board"] = old_board
                 one_move["direction"] = direction
+                one_move["score"] = spel.move_score
                 spel.add_random()
             else:
                 count_moves -= 1
@@ -64,14 +70,19 @@ def play_one_game(spel, nn):
             if spel.did_board_change(old_board):
                 one_move["board"] = old_board
                 one_move["direction"] = direction
+                one_move["score"] = spel.move_score
                 spel.add_random()
             else:
                 count_moves -= 1
         else:
             pass
         if spel.did_board_change(old_board):
+            spel.score += spel.move_score
             one_game["move_" + str(count_moves)] = one_move
         count_moves += 1
+        print(spel)
+        print("Richting: {}".format(direction))
+#        getch=input()
     return max(spel.board), one_game
 
 
@@ -90,9 +101,11 @@ def random_direction():
 
 def find_boards(nn, number_of_boards, min_max_value):
     ''' Plays game until number_of_boards amount of plays with at least
-        min_max_value have been found. Returns list with the boards and
-        directnion and a list with the number of games needed to play.
+        min_max_value have been found. E.g 100 games that reached 512.
+        Returns list with the boards and direction and a list with the
+        number of games needed to play.
     '''
+    # for each found game this is the number of games needed to play.
     counting_total_games = []
     games = {}
     while len(counting_total_games) < number_of_boards:
@@ -106,6 +119,7 @@ def find_boards(nn, number_of_boards, min_max_value):
                 max_val = high_game_value
             nmr_games += 1
         print(spel)
+#        print(game_steps[-1])
         games["game_" + str(len(counting_total_games))] = game_steps
         counting_total_games += [nmr_games]
         # for i in game_steps:
@@ -114,14 +128,55 @@ def find_boards(nn, number_of_boards, min_max_value):
     # game continues after that until board is no longer playable.
     return games, counting_total_games
 
+def remove_moves_after_highest(games):
+    ''' After reaching the highest value the game continues until the board
+        is not playable anymore. These extra moves can be removed.
+    '''
+    small_games = {}
+    for game in games:
+        highest = 0
+        # find highest value in this game
+        for move in games[game]:
+            this_max = max(move[board])
+            if this_max > highest:
+                highest = this_max
+        # add highest value to game as a key
+        small_games[game] = {}
+        small_games[game][high_value] = highest
+        # find all moves until highests value is reached
+        for move in games[game]:
+            if max(move[board]) < highest:
+                small_games[game][move] = move
+    return small_games
+
+def get_play_choice():
+    possible = ["C", "L", "M"]
+    getch =[]
+    questions = [f'\033[2J' + f'\033[H' + "Create new games json-file : [C]",
+                 "Learn from json-file       : [L]",
+                 "Use Markov method          : [M]"]
+    while len(getch) < 1 or getch[0].upper() not in possible:
+        for i in questions:
+            print(i)
+        getch = input("Answer: ")
+    return getch[0].upper()
+
 
 if __name__ == "__main__":
     # Create instance of neural network
     nn = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
-    games, counting_total_games = find_boards(nn, 10000, 256)
-    games["counting_games"] = counting_total_games
-    print("Total nmr games: {}".format(counting_total_games))
-    # Writing to sample.json
-    json_object = json.dumps(games, indent=4, sort_keys=False)
-    with open("sample.json", "w") as outfile:
-        outfile.write(json_object)
+    answer = get_play_choice()
+    if answer == 'C':
+        games, counting_total_games = find_boards(nn, 2, 256)
+        games["counting_games"] = counting_total_games
+        print("Total nmr games: {}".format(counting_total_games))
+        # Writing to sample.json
+        json_object = json.dumps(games, indent=4, sort_keys=False)
+        with open("sample.json", "w") as outfile:
+            outfile.write(json_object)
+    elif answer == 'L':
+        pass
+    elif answer == 'M':
+        pass
+    else:
+        pass

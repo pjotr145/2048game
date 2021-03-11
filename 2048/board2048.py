@@ -11,6 +11,7 @@ class Board():
         self.len_row = 4
         self.board = [0] * self.len_row * self.len_row
         self.score = 0
+        self.move_score = 0
         # Start with 2 random values
         self.add_random()
         self.add_random()
@@ -50,7 +51,9 @@ class Board():
             else:
                 return esc(f'48;5;{colnmrs[nmr]}') + esc('38;5;16')
 
+        # Clear screen and put cursor at top left
         print_board = f'\033[2J' + f'\033[H'
+#        print_board = ''
         for i in range(self.len_row):
             for j in range(self.len_row):
                 print_board += colour(self.board[i * self.len_row + j]) + \
@@ -75,6 +78,8 @@ class Board():
     def move_row(self, row):
         ''' Moves one row according to the rules of the game 2048
             example [0, 2, 0, 2] => [4, 0, 0, 0]
+            to test [2, 2, 2, 2] => [4, 4, 0, 0]
+            to test [4, 2, 2, 0] => [4, 4, 0, 0]
         '''
         # Move all numbers to left. (or remove all 0's)
         all_numbers = list(locate(row))
@@ -83,7 +88,7 @@ class Board():
             for i in range(len(row_with_nmrs) - 1):
                 if row_with_nmrs[i] == row_with_nmrs[i + 1]:
                     row_with_nmrs[i] *= 2
-                    self.score += row_with_nmrs[i]
+                    self.move_score += row_with_nmrs[i]
                     row_with_nmrs[i + 1] = 0
         all_numbers = locate(row_with_nmrs)
         row = [row_with_nmrs[i] for i in all_numbers]
@@ -156,7 +161,9 @@ class Board():
                 self.board[select] = 4
 
     def check_if_moves_possible(self):
-        ''' If no more moves possible then the game ends '''
+        ''' If no more moves possible then the game ends.
+            Returns True if moves are possible.
+        '''
         def check_zeros():
             ''' check if there are empty fields on the board '''
             if 0 in self.board:
