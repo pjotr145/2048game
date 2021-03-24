@@ -15,6 +15,7 @@ class Board():
         # Start with 2 random values
         self.add_random()
         self.add_random()
+        self.board_changed = True
 
 #    def __repr__(self):
 #        pass
@@ -145,6 +146,27 @@ class Board():
             new_board += new_row[::-1]
         self.board = new_board
 #        self.flatten_board()
+
+    def move_in_direction(self, direction):
+        ''' Move the board in numeric direction
+            and checks if the board changed.
+        '''
+        old_board = self.board
+        if direction == 0:
+            self.move_up()
+        elif direction == 1:
+            self.move_down()
+        elif direction == 2:
+            self.move_left()
+        elif direction == 3:
+            self.move_right()
+        else:
+            pass
+        if old_board == self.board:
+            self.board_changed = True
+        else:
+            self.board_changed = False
+
 
     def add_random(self):
         ''' get random empty field  place 2 or 4.

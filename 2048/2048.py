@@ -3,7 +3,7 @@
 from board2048 import Board
 from nn import neuralNetwork
 import numpy as np
-from random import random
+from random import random, getrandbits
 import json
 
 
@@ -37,45 +37,23 @@ def play_one_game(spel, nn):
         old_board = spel.board
         spel.move_score = 0
         one_move = {}
-        # TODO: refactor if-loop below. seems too complicated.
         if direction == 0:
             spel.move_up()
-            if spel.did_board_change(old_board):
-                one_move["board"] = old_board
-                one_move["direction"] = direction
-                one_move["score"] = spel.move_score
-                spel.add_random()
-            else:
-                count_moves -= 1
         elif direction == 1:
             spel.move_down()
-            if spel.did_board_change(old_board):
-                one_move["board"] = old_board
-                one_move["direction"] = direction
-                one_move["score"] = spel.move_score
-                spel.add_random()
-            else:
-                count_moves -= 1
         elif direction == 2:
             spel.move_left()
-            if spel.did_board_change(old_board):
-                one_move["board"] = old_board
-                one_move["direction"] = direction
-                one_move["score"] = spel.move_score
-                spel.add_random()
-            else:
-                count_moves -= 1
         elif direction == 3:
             spel.move_right()
-            if spel.did_board_change(old_board):
-                one_move["board"] = old_board
-                one_move["direction"] = direction
-                one_move["score"] = spel.move_score
-                spel.add_random()
-            else:
-                count_moves -= 1
         else:
             pass
+        if spel.did_board_change(old_board):
+            one_move["board"] = old_board
+            one_move["direction"] = direction
+            one_move["score"] = spel.move_score
+            spel.add_random()
+        else:
+            count_moves -= 1
         if spel.did_board_change(old_board):
             spel.score += spel.move_score
             one_game["move_" + str(count_moves)] = one_move
@@ -84,7 +62,6 @@ def play_one_game(spel, nn):
         print("Richting: {}".format(direction))
 #        getch=input()
     return max(spel.board), one_game
-
 
 def random_direction():
     ''' Simulates a player by chosing randomly in wich direction to move '''
@@ -97,7 +74,6 @@ def random_direction():
         return 2
     else:
         return 3
-
 
 def find_boards(nn, number_of_boards, min_max_value):
     ''' Plays game until number_of_boards amount of plays with at least
@@ -149,12 +125,62 @@ def remove_moves_after_highest(games):
                 small_games[game][move] = move
     return small_games
 
+def get_board_with_montecarlo(highscore, playdepth):
+    '''
+    until max score on board >= highscore
+        select all 4 directions
+        simulate all 4 directions until playdepth games
+        select direction with highest score
+        play that direction
+    '''
+    mc_width = 6
+    mc_depth = 10
+    count_moves = 0
+    one_game = {}
+    all_directions = [0, 1, 2, 3]       # up, down, left, right
+    spel = Board()
+    while spel.check_if_moves_possible() and count_moves < max_moves:
+        # While moves are possible and total number of moves below limit
+        scores = [0, 0, 0, 0]
+        for this_move in all_directions:
+            # for each of the 4 directions
+            print("Direction: {}".format(this_move))
+            this_game = Board()
+            this_game.board = spel.board
+            this_game.move_in_direction(this_move)
+            if this_game.board_changed:
+                # Only if that first move does anything
+                print("First move done")
+                sim_start_board = this_game.board
+                for _ in range(mc_width):
+                    # Simulate multiple games to get some sort af average
+                    depth_count = 0
+                    this_game.board = sim_start_board
+                    # start every sim with same start board
+                    while this_game.check_if_moves_possible() and \
+                    depth_count < mc_depth:
+                        this_game.move_in_direction(getrandbits(2))
+                        if this_game.board_changed:
+                            this_game.add_random()
+                            depth_count += 1
+                            scores[this_move] += this_game.move_score
+        spel.move_in_direction(np.argmax(scores))
+        spel.add_random()
+        print(spel)
+        print("Scores: {}".format(scores))
+        count_moves += 1
+        print(count_moves)
+
+
+
+
+
 def get_play_choice():
     possible = ["C", "L", "M"]
     getch =[]
     questions = [f'\033[2J' + f'\033[H' + "Create new games json-file : [C]",
                  "Learn from json-file       : [L]",
-                 "Use Markov method          : [M]"]
+                 "Use Monte Carlo method     : [M]"]
     while len(getch) < 1 or getch[0].upper() not in possible:
         for i in questions:
             print(i)
@@ -167,7 +193,7 @@ if __name__ == "__main__":
     nn = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
     answer = get_play_choice()
     if answer == 'C':
-        games, counting_total_games = find_boards(nn, 2, 256)
+        games, counting_total_games = find_boards(nn, 5, 512)
         games["counting_games"] = counting_total_games
         print("Total nmr games: {}".format(counting_total_games))
         # Writing to sample.json
@@ -177,6 +203,6 @@ if __name__ == "__main__":
     elif answer == 'L':
         pass
     elif answer == 'M':
-        pass
+        get_board_with_montecarlo(2048, 10)
     else:
         pass
