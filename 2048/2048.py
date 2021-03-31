@@ -21,6 +21,10 @@ max_moves = 3000
 max_games = 1000
 
 
+montecarlo_width = 20
+montecarlo_depth = 15
+
+
 def play_one_game(spel, nn):
     ''' Plays one game. Still needs manual editing to switch between
         random-player and neural network.
@@ -125,32 +129,29 @@ def remove_moves_after_highest(games):
                 small_games[game][move] = move
     return small_games
 
-def get_board_with_montecarlo(highscore, playdepth):
+def play_one_game_with_montecarlo(new_game, mc_width = 100, mc_depth = 20):
     '''
-    until max score on board >= highscore
-        select all 4 directions
-        simulate all 4 directions until playdepth games
+    while moves are possible
+        simulate all 4 directions
+            each with mc_width games played for mc_depth moves.
         select direction with highest score
         play that direction
+    return highest value on board and the played game
     '''
-    mc_width = 6
-    mc_depth = 10
     count_moves = 0
     one_game = {}
     all_directions = [0, 1, 2, 3]       # up, down, left, right
-    spel = Board()
+    spel = new_game
     while spel.check_if_moves_possible() and count_moves < max_moves:
         # While moves are possible and total number of moves below limit
         scores = [0, 0, 0, 0]
         for this_move in all_directions:
             # for each of the 4 directions
-            print("Direction: {}".format(this_move))
             this_game = Board()
             this_game.board = spel.board
             this_game.move_in_direction(this_move)
             if this_game.board_changed:
                 # Only if that first move does anything
-                print("First move done")
                 sim_start_board = this_game.board
                 for _ in range(mc_width):
                     # Simulate multiple games to get some sort af average
@@ -164,15 +165,52 @@ def get_board_with_montecarlo(highscore, playdepth):
                             this_game.add_random()
                             depth_count += 1
                             scores[this_move] += this_game.move_score
-        spel.move_in_direction(np.argmax(scores))
+        # Needs int() because json can't handle numpy int64.
+        direction = int(np.argmax(scores))
+        one_move = {}
+        one_move["board"] = spel.board
+        one_move["direction"] = direction
+        spel.move_in_direction(direction)
+        one_move["score"] = spel.move_score
+        one_game["move_" + str(count_moves)] = one_move
         spel.add_random()
+        spel.score += spel.move_score
+        count_moves += 1
         print(spel)
         print("Scores: {}".format(scores))
-        count_moves += 1
         print(count_moves)
+    return max(spel.board), one_game
 
-
-
+def find_mc_boards(number_of_boards, min_max_value):
+    ''' Plays game until number_of_boards amount of plays with at least
+        min_max_value have been found. E.g 100 games that reached 512.
+        Returns list with the boards and direction and a list with the
+        number of games needed to play.
+    '''
+    # for each found game this is the number of games needed to play.
+    counting_total_games = []
+    games = {}
+    while len(counting_total_games) < number_of_boards:
+        nmr_games = 0
+        max_val = 0
+        while max_val < min_max_value:
+            # Create instance of 2048 game
+            spel = Board()
+            high_game_value, game_steps = play_one_game_with_montecarlo(spel,
+                                                           montecarlo_width,
+                                                           montecarlo_depth)
+            if high_game_value > max_val:
+                max_val = high_game_value
+            nmr_games += 1
+        print(spel)
+#        print(game_steps[-1])
+        games["game_" + str(len(counting_total_games))] = game_steps
+        counting_total_games += [nmr_games]
+        # for i in game_steps:
+        #     print("{}: {}".format(i, game_steps[i]))
+    # TODO: clear games of movements after reaching highest values. Now the
+    # game continues after that until board is no longer playable.
+    return games, counting_total_games
 
 
 def get_play_choice():
@@ -193,7 +231,7 @@ if __name__ == "__main__":
     nn = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
     answer = get_play_choice()
     if answer == 'C':
-        games, counting_total_games = find_boards(nn, 5, 512)
+        games, counting_total_games = find_boards(nn, 2, 256)
         games["counting_games"] = counting_total_games
         print("Total nmr games: {}".format(counting_total_games))
         # Writing to sample.json
@@ -203,6 +241,13 @@ if __name__ == "__main__":
     elif answer == 'L':
         pass
     elif answer == 'M':
-        get_board_with_montecarlo(2048, 10)
+#        play_one_game_with_montecarlo()
+        games, counting_total_games = find_mc_boards(500, 512)
+        games["counting_games"] = counting_total_games
+        print("Total nmr games: {}".format(counting_total_games))
+        # Writing to sample.json
+        json_object = json.dumps(games, indent=4, sort_keys=False)
+        with open("sample.json", "w") as outfile:
+            outfile.write(json_object)
     else:
         pass

@@ -38,11 +38,11 @@ class Board():
                           4:  27,
                           8:  46,
                          16: 172,
-                         32: 163,
-                         64: 160,
+                         32:  35,
+                         64:  28,
                         128: 120,
-                        256:  28,
-                        512:  35,
+                        256: 160,
+                        512: 163,
                        1024:  22,
                        2048:  94,
                        4096:  88,
@@ -163,9 +163,9 @@ class Board():
         else:
             pass
         if old_board == self.board:
-            self.board_changed = True
-        else:
             self.board_changed = False
+        else:
+            self.board_changed = True
 
 
     def add_random(self):
