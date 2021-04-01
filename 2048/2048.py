@@ -228,6 +228,7 @@ def get_play_choice():
 
 if __name__ == "__main__":
     # TODO: refactor main
+    # TODO: read variables from config file
     # Create instance of neural network
     nn = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
     answer = get_play_choice()
