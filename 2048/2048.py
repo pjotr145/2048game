@@ -240,6 +240,8 @@ def get_play_choice():
 if __name__ == "__main__":
     # TODO: refactor main
     # TODO: read variables from config file
+    with open("config.json") as f:
+        conf = json.load(f)
     # Create instance of neural network
     nn = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
     answer = get_play_choice()
@@ -251,3 +253,4 @@ if __name__ == "__main__":
         play_games(answer)
     else:
         pass
+    print("mc_width: {}".format(conf["montecarlo_width"]))
