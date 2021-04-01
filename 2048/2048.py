@@ -21,8 +21,8 @@ max_moves = 3000
 max_games = 1000
 
 
-montecarlo_width = 20
-montecarlo_depth = 15
+montecarlo_width = 5
+montecarlo_depth = 5
 
 
 def play_one_game(spel, nn):
@@ -212,6 +212,17 @@ def find_mc_boards(number_of_boards, min_max_value):
     # game continues after that until board is no longer playable.
     return games, counting_total_games
 
+def play_games(choice):
+    if choice == 'C':
+        games, counting_total_games = find_boards(nn, 2, 256)
+    elif choice == 'M':
+        games, counting_total_games = find_mc_boards(500, 512)
+    games["counting_games"] = counting_total_games
+    print("Total nmr games: {}".format(counting_total_games))
+    # Writing to sample.json
+    json_object = json.dumps(games, indent=4, sort_keys=False)
+    with open("sample.json", "w") as outfile:
+        outfile.write(json_object)
 
 def get_play_choice():
     possible = ["C", "L", "M"]
@@ -233,23 +244,10 @@ if __name__ == "__main__":
     nn = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
     answer = get_play_choice()
     if answer == 'C':
-        games, counting_total_games = find_boards(nn, 2, 256)
-        games["counting_games"] = counting_total_games
-        print("Total nmr games: {}".format(counting_total_games))
-        # Writing to sample.json
-        json_object = json.dumps(games, indent=4, sort_keys=False)
-        with open("sample.json", "w") as outfile:
-            outfile.write(json_object)
+        play_games(answer)
     elif answer == 'L':
         pass
     elif answer == 'M':
-#        play_one_game_with_montecarlo()
-        games, counting_total_games = find_mc_boards(500, 512)
-        games["counting_games"] = counting_total_games
-        print("Total nmr games: {}".format(counting_total_games))
-        # Writing to sample.json
-        json_object = json.dumps(games, indent=4, sort_keys=False)
-        with open("sample.json", "w") as outfile:
-            outfile.write(json_object)
+        play_games(answer)
     else:
         pass
