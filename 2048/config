@@ -1,6 +1,7 @@
 {
 	"max_moves": 3000,
-	"max_games": 1000,
+	"max_games": 5,
+	"reach_value": 256,
 	"montecarlo_width": 5,
 	"montecarlo_depth": 5
 }

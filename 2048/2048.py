@@ -21,8 +21,6 @@ max_moves = 3000
 max_games = 1000
 
 
-montecarlo_width = 5
-montecarlo_depth = 5
 
 
 def play_one_game(spel, nn):
@@ -32,7 +30,7 @@ def play_one_game(spel, nn):
     '''
     count_moves = 0
     one_game = {}
-    while spel.check_if_moves_possible() and count_moves < max_moves:
+    while spel.check_if_moves_possible() and count_moves < conf["max_moves"]:
         # TODO: make random/neural player a choice in the game.
 #        inputs = np.asfarray(spel.normalise_board())
 #        outputs = nn.query(inputs)
@@ -79,7 +77,7 @@ def random_direction():
     else:
         return 3
 
-def find_boards(nn, number_of_boards, min_max_value):
+def find_boards(nn, number_of_boards = 5, min_max_value = 256):
     ''' Plays game until number_of_boards amount of plays with at least
         min_max_value have been found. E.g 100 games that reached 512.
         Returns list with the boards and direction and a list with the
@@ -142,7 +140,7 @@ def play_one_game_with_montecarlo(new_game, mc_width = 100, mc_depth = 20):
     one_game = {}
     all_directions = [0, 1, 2, 3]       # up, down, left, right
     spel = new_game
-    while spel.check_if_moves_possible() and count_moves < max_moves:
+    while spel.check_if_moves_possible() and count_moves < conf["max_moves"]:
         # While moves are possible and total number of moves below limit
         scores = [0, 0, 0, 0]
         for this_move in all_directions:
@@ -197,8 +195,8 @@ def find_mc_boards(number_of_boards, min_max_value):
             # Create instance of 2048 game
             spel = Board()
             high_game_value, game_steps = play_one_game_with_montecarlo(spel,
-                                                           montecarlo_width,
-                                                           montecarlo_depth)
+                                                   conf["montecarlo_width"],
+                                                   conf["montecarlo_depth"])
             if high_game_value > max_val:
                 max_val = high_game_value
             nmr_games += 1
@@ -214,9 +212,12 @@ def find_mc_boards(number_of_boards, min_max_value):
 
 def play_games(choice):
     if choice == 'C':
-        games, counting_total_games = find_boards(nn, 2, 256)
+        games, counting_total_games = find_boards(nn,
+                                                  conf["max_games"],
+                                                  conf["reach_value"])
     elif choice == 'M':
-        games, counting_total_games = find_mc_boards(500, 512)
+        games, counting_total_games = find_mc_boards(conf["max_games"],
+                                                     conf["reach_value"])
     games["counting_games"] = counting_total_games
     print("Total nmr games: {}".format(counting_total_games))
     # Writing to sample.json
@@ -238,9 +239,7 @@ def get_play_choice():
 
 
 if __name__ == "__main__":
-    # TODO: refactor main
-    # TODO: read variables from config file
-    with open("config.json") as f:
+    with open("config") as f:
         conf = json.load(f)
     # Create instance of neural network
     nn = neuralNetwork(input_nodes, hidden_nodes, output_nodes, learning_rate)
@@ -253,4 +252,4 @@ if __name__ == "__main__":
         play_games(answer)
     else:
         pass
-    print("mc_width: {}".format(conf["montecarlo_width"]))
+    #print("mc_width: {}".format(conf["montecarlo_width"]))
