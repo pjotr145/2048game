@@ -15,13 +15,6 @@ output_nodes = 4
 # Learning rate
 learning_rate = 0.1
 
-# Max number of moves per game
-#max_moves = 3000
-# Max number of games
-#max_games = 1000
-
-
-
 
 def play_one_game(spel, nn):
     ''' Plays one game. Still needs manual editing to switch between
@@ -105,27 +98,6 @@ def find_boards(nn, number_of_boards = 5, min_max_value = 256):
     # TODO: clear games of movements after reaching highest values. Now the
     # game continues after that until board is no longer playable.
     return games, counting_total_games
-
-#def remove_moves_after_highest(games):
-#    ''' After reaching the highest value the game continues until the board
-#        is not playable anymore. These extra moves can be removed.
-#    '''
-#    small_games = {}
-#    for game in games:
-#        highest = 0
-#        # find highest value in this game
-#        for move in games[game]:
-#            this_max = max(move[board])
-#            if this_max > highest:
-#                highest = this_max
-#        # add highest value to game as a key
-#        small_games[game] = {}
-#        small_games[game][high_value] = highest
-#        # find all moves until highests value is reached
-#        for move in games[game]:
-#            if max(move[board]) < highest:
-#                small_games[game][move] = move
-#    return small_games
 
 def remove_moves_after_highest(games):
     ''' After reaching the highest value the game continues until the board
