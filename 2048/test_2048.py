@@ -27,12 +27,15 @@ test_game = [
     [0,2,2,256],
     [0,2,4,128]
 ]
+
 #spel.board = copy.deepcopy(test_game)
 spel.board = [copy.copy(i) for i in test_game]
 for   i in spel.board:
     print(i)
+spel.flatten_board()
 print("Moving up")
 spel.move_up()
+
 for   i in spel.board:
     print(i)
 if spel.board == test_game:
@@ -42,7 +45,7 @@ else:
 for i in test_game:
         print(i)
 spel.board = [copy.copy(i) for i in test_game]
-
+spel.flatten_board()
 spel.move_down()
 for i in spel.board:
     print(i)

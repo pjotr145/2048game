@@ -5,7 +5,7 @@ import random
 
 
 class Board():
-    ''' Class definition of a 2048 board[0, 0, 0]
+    ''' Class definition of a 2048 board
     '''
     def __init__(self):
         self.len_row = 4
@@ -32,7 +32,7 @@ class Board():
             return str(nmr).center(5, " ")
 
         def colour(nmr):
-            ''' Add some colour to printing the board '''
+            ''' Add some colour to printing the board 27 '''
             colnmrs = {   0:   0,
                           2:  21,
                           4:  27,
@@ -43,10 +43,10 @@ class Board():
                         128: 120,
                         256: 160,
                         512: 163,
-                       1024:  22,
-                       2048:  94,
-                       4096:  88,
-                       8192:  93}
+                       1024:  11,
+                       2048:  93,
+                       4096:  46,
+                       8192: 202}
             if nmr == 0:
                 return esc('48;5;0') + esc('38;5;0')
             else:

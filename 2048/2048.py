@@ -16,9 +16,9 @@ output_nodes = 4
 learning_rate = 0.1
 
 # Max number of moves per game
-max_moves = 3000
+#max_moves = 3000
 # Max number of games
-max_games = 1000
+#max_games = 1000
 
 
 
@@ -127,7 +127,7 @@ def remove_moves_after_highest(games):
                 small_games[game][move] = move
     return small_games
 
-def play_one_game_with_montecarlo(new_game, mc_width = 100, mc_depth = 20):
+def play_one_game_with_montecarlo(new_game, nmr_games, found_games, mc_width = 100, mc_depth = 20):
     '''
     while moves are possible
         simulate all 4 directions
@@ -176,7 +176,9 @@ def play_one_game_with_montecarlo(new_game, mc_width = 100, mc_depth = 20):
         count_moves += 1
         print(spel)
         print("Scores: {}".format(scores))
-        print(count_moves)
+        print("Number of moves: {}".format(count_moves))
+        print("Number of Games played so far: {}".format(nmr_games))
+        print("Found number of games: {}".format(found_games))
     return max(spel.board), one_game
 
 def find_mc_boards(number_of_boards, min_max_value):
@@ -189,18 +191,21 @@ def find_mc_boards(number_of_boards, min_max_value):
     counting_total_games = []
     games = {}
     while len(counting_total_games) < number_of_boards:
-        nmr_games = 0
+        nmr_games = 1
         max_val = 0
         while max_val < min_max_value:
             # Create instance of 2048 game
             spel = Board()
             high_game_value, game_steps = play_one_game_with_montecarlo(spel,
+                                                   nmr_games,
+                                                   len(counting_total_games),
                                                    conf["montecarlo_width"],
                                                    conf["montecarlo_depth"])
             if high_game_value > max_val:
                 max_val = high_game_value
             nmr_games += 1
         print(spel)
+#        print("Number of games: {}".format(nmr_games))
 #        print(game_steps[-1])
         games["game_" + str(len(counting_total_games))] = game_steps
         counting_total_games += [nmr_games]
@@ -222,7 +227,7 @@ def play_games(choice):
     print("Total nmr games: {}".format(counting_total_games))
     # Writing to sample.json
     json_object = json.dumps(games, indent=4, sort_keys=False)
-    with open("sample.json", "w") as outfile:
+    with open(conf["data_dir"]+"sample.json", "w") as outfile:
         outfile.write(json_object)
 
 def get_play_choice():
