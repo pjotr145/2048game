@@ -106,6 +106,27 @@ def find_boards(nn, number_of_boards = 5, min_max_value = 256):
     # game continues after that until board is no longer playable.
     return games, counting_total_games
 
+#def remove_moves_after_highest(games):
+#    ''' After reaching the highest value the game continues until the board
+#        is not playable anymore. These extra moves can be removed.
+#    '''
+#    small_games = {}
+#    for game in games:
+#        highest = 0
+#        # find highest value in this game
+#        for move in games[game]:
+#            this_max = max(move[board])
+#            if this_max > highest:
+#                highest = this_max
+#        # add highest value to game as a key
+#        small_games[game] = {}
+#        small_games[game][high_value] = highest
+#        # find all moves until highests value is reached
+#        for move in games[game]:
+#            if max(move[board]) < highest:
+#                small_games[game][move] = move
+#    return small_games
+
 def remove_moves_after_highest(games):
     ''' After reaching the highest value the game continues until the board
         is not playable anymore. These extra moves can be removed.
@@ -113,18 +134,19 @@ def remove_moves_after_highest(games):
     small_games = {}
     for game in games:
         highest = 0
+        highest_move = ""
         # find highest value in this game
         for move in games[game]:
-            this_max = max(move[board])
+            this_max = max(games[game][move]["board"])
             if this_max > highest:
+                highest_move = move
                 highest = this_max
-        # add highest value to game as a key
         small_games[game] = {}
-        small_games[game][high_value] = highest
         # find all moves until highests value is reached
         for move in games[game]:
-            if max(move[board]) < highest:
-                small_games[game][move] = move
+            if max(games[game][move]["board"]) < highest:
+                small_games[game][move] = games[game][move]
+        small_games[game][highest_move] = games[game][highest_move]
     return small_games
 
 def play_one_game_with_montecarlo(new_game, nmr_games, found_games, mc_width = 100, mc_depth = 20):
@@ -211,8 +233,8 @@ def find_mc_boards(number_of_boards, min_max_value):
         counting_total_games += [nmr_games]
         # for i in game_steps:
         #     print("{}: {}".format(i, game_steps[i]))
-    # TODO: clear games of movements after reaching highest values. Now the
-    # game continues after that until board is no longer playable.
+    # Clear games of moves after reaching highest values.
+    games = remove_moves_after_highest(games)
     return games, counting_total_games
 
 def play_games(choice):

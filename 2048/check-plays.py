@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 
 # Create instance of 2048 game
 spel = Board()
-#print(spel)
 directions = {0:"up",
               1:"down",
               2:"left",
@@ -44,7 +43,7 @@ def remove_moves_after_highest(games):
 
 
 if __name__ == "__main__":
-    with open("data/500-games-to-512-20-15.json") as f:
+    with open("data/sample.json") as f:
         games = json.load(f)
     counting_games = games["counting_games"]
     games.pop("counting_games")
