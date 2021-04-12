@@ -1,8 +1,8 @@
 {
 	"data_dir": "data/",
 	"max_moves": 3000,
-	"max_games": 2,
-	"reach_value": 512,
+	"max_games": 50,
+	"reach_value": 1024,
 	"montecarlo_width": 20,
 	"montecarlo_depth": 40
 }

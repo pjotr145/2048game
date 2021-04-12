@@ -43,7 +43,7 @@ def remove_moves_after_highest(games):
 
 
 if __name__ == "__main__":
-    with open("data/sample.json") as f:
+    with open("data/10000-games-to-256.json") as f:
         games = json.load(f)
     counting_games = games["counting_games"]
     games.pop("counting_games")
@@ -61,10 +61,23 @@ if __name__ == "__main__":
     print("Number of moves needed: {}".format(moves_needed))
 #    print("Highest value reached : {}".format(max_scores))
     # Plot graph. bins = number of collumns in groph.
+    figure, axis = plt.subplots(2)
+    
     plt.style.use('ggplot')
-    plt.hist(moves_needed, bins=50)
+    
+    axis[0].hist(counting_games, bins=20)
+    axis[0].set_title("Aantal spellen")
+    
+    axis[1].hist(moves_needed, bins=20)
+    axis[1].set_title("Aantal moves")
+    axis[1].set_ylim([0, 100])
+#    plt.hist(moves_needed, bins=50)
+#    plt.title('Aantal moves')
+#    
 #    plt.show()
-    plt.hist(counting_games, bins=50)
+#    plt.hist(counting_games, bins=50)
+#    plt.title('Aantal spellen')
+    
     plt.show()
     print("start")
     for game in games:
